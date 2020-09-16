@@ -1,0 +1,30 @@
+{
+  "type": "FieldDatum",
+  "id": "90096378",
+  "attributes": {
+    "file": {
+      "url": null
+    },
+    "file_content_type": null,
+    "file_name": null,
+    "file_size": null,
+    "value": "Mitch Varlow's CG"
+  },
+  "relationships": {
+    "field_definition": {
+      "data": {
+        "type": "FieldDefinition",
+        "id": "401410"
+      }
+    },
+    "customizable": {
+      "data": {
+        "type": "Person",
+        "id": "2373583"
+      }
+    }
+  },
+  "links": {
+    "self": "https://api.planningcenteronline.com/people/v2/field_data/90096378"
+  }
+}
