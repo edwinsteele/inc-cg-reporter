@@ -47,7 +47,9 @@ def get_field_definition_ids(pco: pypco.PCO, matching: Set[str]) -> Dict[str, st
     return field_defs
 
 
-def process_field_data(pco: pypco.PCO, field_definitions: Dict[str, str]) -> Tuple[Dict[str, List[str]], Dict[str, Dict[str, str]]]:
+def process_field_data(
+    pco: pypco.PCO, field_definitions: Dict[str, str]
+) -> Tuple[Dict[str, List[str]], Dict[str, Dict[str, str]]]:
     # "Edwin Steele": {"87410": "1/1/2000", ... <other fieldid:value mappings>}
     personal_attributes: Dict[str, Dict[str, str]] = defaultdict(dict)
     # "Mitch Varlows CG": ["2373583", ... <other person ids>]
@@ -80,16 +82,19 @@ def run() -> None:
     #     'where[first_name]': 'Edwin',
     #     'where[last_name]': 'Steele',
     # }
-    all_field_definitions = set(PERSONAL_FIELD_DEFINITIONS + [
-        CONNECT_GROUP_FIELD_DEFINITION_NAME
-    ])
+    all_field_definitions = set(
+        PERSONAL_FIELD_DEFINITIONS + [CONNECT_GROUP_FIELD_DEFINITION_NAME]
+    )
     field_definitions = get_field_definition_ids(pco, all_field_definitions)
     logger.info(field_definitions)
-    connect_group_membership, personal_attributes = process_field_data(pco, field_definitions)
+    connect_group_membership, personal_attributes = process_field_data(
+        pco, field_definitions
+    )
 
-    logger.info("Connect Group Membership: %s", pprint.pformat(connect_group_membership))
+    logger.info(
+        "Connect Group Membership: %s", pprint.pformat(connect_group_membership)
+    )
     logger.info("Personal Attributes: %s", pprint.pformat(personal_attributes))
-
 
 
 if __name__ == "__main__":
