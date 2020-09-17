@@ -14,7 +14,7 @@ def test_cg_extraction_from_field_data(
         pco, field_definitions
     )
     assert personal_attributes == {}
-    assert connect_group_membership == {"Mitch Varlow's CG": ["2373583"]}
+    assert connect_group_membership == {"Sample CG": ["2373583"]}
 
 
 def test_person_attribute_extraction_from_field_data(
