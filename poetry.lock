@@ -331,6 +331,14 @@ dev = ["pre-commit", "tox"]
 
 [[package]]
 category = "dev"
+description = "A library for stubbing in Python"
+name = "pretend"
+optional = false
+python-versions = "*"
+version = "1.0.9"
+
+[[package]]
+category = "dev"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
 name = "py"
 optional = false
@@ -574,7 +582,7 @@ python-versions = "*"
 version = "1.12.1"
 
 [metadata]
-content-hash = "e99feda938357bb754c2e253a5c73944e50dff52356d3e024ad5e18cd7a0a5eb"
+content-hash = "6afd4c2877bfbbd568abd06c5afadc910444abbac573a7c5a8aaa2bc47a7880d"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -728,6 +736,10 @@ pathspec = [
 pluggy = [
     {file = "pluggy-0.13.1-py2.py3-none-any.whl", hash = "sha256:966c145cd83c96502c3c3868f50408687b38434af77734af1e9ca461a4081d2d"},
     {file = "pluggy-0.13.1.tar.gz", hash = "sha256:15b2acde666561e1298d71b523007ed7364de07029219b604cf808bfa1c765b0"},
+]
+pretend = [
+    {file = "pretend-1.0.9-py2.py3-none-any.whl", hash = "sha256:e389b12b7073604be67845dbe32bf8297360ad9a609b24846fe15d86e0b7dc01"},
+    {file = "pretend-1.0.9.tar.gz", hash = "sha256:c90eb810cde8ebb06dafcb8796f9a95228ce796531bc806e794c2f4649aa1b10"},
 ]
 py = [
     {file = "py-1.9.0-py2.py3-none-any.whl", hash = "sha256:366389d1db726cd2fcfc79732e75410e5fe4d31db13692115529d34069a043c2"},
