@@ -1,0 +1,128 @@
+{
+  "links": {
+    "self": "https://api.planningcenteronline.com/people/v2/people?where[id]=5555555"
+  },
+  "data": [
+    {
+      "type": "Person",
+      "id": "5555555",
+      "attributes": {
+        "accounting_administrator": false,
+        "anniversary": null,
+        "avatar": "https://avatars.planningcenteronline.com/uploads/person/5555555-1347644744/avatar.2.png",
+        "birthdate": "2000-01-01",
+        "child": false,
+        "created_at": "2012-09-14T17:45:44Z",
+        "demographic_avatar_url": "https://avatars.planningcenteronline.com/uploads/person/5555555-1347644744/avatar.2.png",
+        "directory_status": "no_access",
+        "first_name": "Some",
+        "gender": "M",
+        "given_name": null,
+        "grade": null,
+        "graduation_year": null,
+        "inactivated_at": null,
+        "last_name": "Guy",
+        "medical_notes": null,
+        "membership": "Member",
+        "middle_name": null,
+        "name": "Some Guy",
+        "nickname": null,
+        "passed_background_check": false,
+        "people_permissions": null,
+        "remote_id": null,
+        "school_type": null,
+        "site_administrator": false,
+        "status": "active",
+        "updated_at": "2020-09-21T06:58:23Z"
+      },
+      "relationships": {
+        "primary_campus": {
+          "data": null
+        }
+      },
+      "links": {
+        "self": "https://api.planningcenteronline.com/people/v2/people/5555555"
+      }
+    }
+  ],
+  "included": [],
+  "meta": {
+    "total_count": 1,
+    "count": 1,
+    "can_order_by": [
+      "given_name",
+      "first_name",
+      "nickname",
+      "middle_name",
+      "last_name",
+      "birthdate",
+      "anniversary",
+      "gender",
+      "grade",
+      "child",
+      "graduation_year",
+      "site_administrator",
+      "accounting_administrator",
+      "people_permissions",
+      "membership",
+      "inactivated_at",
+      "status",
+      "created_at",
+      "updated_at",
+      "remote_id"
+    ],
+    "can_query_by": [
+      "given_name",
+      "first_name",
+      "nickname",
+      "middle_name",
+      "last_name",
+      "birthdate",
+      "anniversary",
+      "gender",
+      "grade",
+      "child",
+      "graduation_year",
+      "site_administrator",
+      "accounting_administrator",
+      "people_permissions",
+      "membership",
+      "inactivated_at",
+      "status",
+      "medical_notes",
+      "created_at",
+      "updated_at",
+      "search_name",
+      "search_name_or_email",
+      "search_name_or_email_or_phone_number",
+      "remote_id",
+      "id"
+    ],
+    "can_include": [
+      "addresses",
+      "emails",
+      "field_data",
+      "households",
+      "inactive_reason",
+      "marital_status",
+      "name_prefix",
+      "name_suffix",
+      "organization",
+      "person_apps",
+      "phone_numbers",
+      "platform_notifications",
+      "primary_campus",
+      "school",
+      "social_profiles"
+    ],
+    "can_filter": [
+      "created_since",
+      "admins",
+      "organization_admins"
+    ],
+    "parent": {
+      "id": "86059",
+      "type": "Organization"
+    }
+  }
+}

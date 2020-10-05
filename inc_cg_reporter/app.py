@@ -1,6 +1,6 @@
+import functools
 import logging
 import os
-import pprint
 from collections import defaultdict
 from typing import Dict, List, Set, Tuple
 
@@ -8,7 +8,7 @@ import daiquiri
 import pypco
 
 
-daiquiri.setup(level=logging.DEBUG)
+daiquiri.setup(level=logging.INFO)
 logger = daiquiri.getLogger(__name__)
 
 
@@ -76,6 +76,13 @@ def process_field_data(
     return connect_group_membership, personal_attributes
 
 
+@functools.lru_cache
+def get_person_name_from_id(pco: pypco.PCO, person_id: str) -> str:
+    params = {"where[id]": person_id}
+    person = pco.get("/people/v2/people", **params)
+    return str(person["data"][0]["attributes"]["name"])
+
+
 def run() -> None:
     pco = get_pco()
     # params = {
@@ -85,16 +92,19 @@ def run() -> None:
     all_field_definitions = set(
         PERSONAL_FIELD_DEFINITIONS + [CONNECT_GROUP_FIELD_DEFINITION_NAME]
     )
-    field_definitions = get_field_definition_ids(pco, all_field_definitions)
-    logger.info(field_definitions)
+    field_defs_id_by_name = get_field_definition_ids(pco, all_field_definitions)
+    logger.info(field_defs_id_by_name)
     connect_group_membership, personal_attributes = process_field_data(
-        pco, field_definitions
+        pco, field_defs_id_by_name
     )
 
-    logger.info(
-        "Connect Group Membership: %s", pprint.pformat(connect_group_membership)
-    )
-    logger.info("Personal Attributes: %s", pprint.pformat(personal_attributes))
+    field_defs_name_by_id = {v: k for k, v in field_defs_id_by_name.items()}
+    for connect_group, member_list in connect_group_membership.items():
+        logger.info("### Connect Group: %s ###", connect_group)
+        for person_id in member_list:
+            logger.info("- %s", get_person_name_from_id(pco, person_id))
+            for field_id, field_value in personal_attributes[person_id].items():
+                logger.info("%s: %s", field_defs_name_by_id[field_id], field_value)
 
 
 if __name__ == "__main__":

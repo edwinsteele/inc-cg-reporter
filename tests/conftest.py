@@ -15,6 +15,11 @@ def field_data_with_personal_attribute() -> List[Any]:
 
 
 @pytest.fixture
+def person_data() -> Any:
+    return json.load(open("tests/fixtures/person.json"), parse_int=str)
+
+
+@pytest.fixture
 def field_definitions() -> Dict[str, str]:
     # Correct as a 17 Sep 2020
     return {

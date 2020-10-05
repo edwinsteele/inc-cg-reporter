@@ -2,7 +2,7 @@ from typing import List, Any, Dict
 
 from pretend import stub
 
-from inc_cg_reporter.app import process_field_data
+from inc_cg_reporter.app import process_field_data, get_person_name_from_id
 
 
 def test_cg_extraction_from_field_data(
@@ -27,3 +27,8 @@ def test_person_attribute_extraction_from_field_data(
     )
     assert personal_attributes == {"2373583": {"87410": "02/11/1997"}}
     assert connect_group_membership == {}
+
+
+def test_get_person_name_from_id(person_data: Dict[str, str]):
+    pco = stub(get=lambda *args, **kwargs: person_data)
+    assert get_person_name_from_id(pco, "dummy") == "Some Guy"
