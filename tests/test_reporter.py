@@ -2,33 +2,51 @@ from typing import List, Any, Dict
 
 from pretend import stub
 
-from inc_cg_reporter.app import process_field_data, get_person_name_from_id
+from inc_cg_reporter.connect_group import PersonManager, ConnectGroupPersonManager
+from inc_cg_reporter.field_definition import FieldDataProcessor
 
 
 def test_cg_extraction_from_field_data(
-    field_data_with_cell_group: List[Any], field_definitions: Dict[str, str]
+    pco_field_data_with_cell_group,
+    field_dispatcher,
+    person_manager,
+    connect_group_person_manager,
 ):
-    pco = stub(iterate=lambda *args, **kwargs: field_data_with_cell_group)
     # noinspection PyTypeChecker
-    connect_group_membership, personal_attributes = process_field_data(
-        pco, field_definitions
+    fdp = FieldDataProcessor(
+        pco_field_data_with_cell_group,
+        "dummy",
+        ["dummy"],
+        person_manager,
+        connect_group_person_manager,
     )
-    assert personal_attributes == {}
-    assert connect_group_membership == {"Sample CG": ["2373583"]}
+    fdp.process_field_data(field_dispatcher)
+    assert "Sample CG" in connect_group_person_manager.connect_groups
+    assert connect_group_person_manager.connect_groups["Sample CG"].name == "Sample CG"
+    assert len(connect_group_person_manager.connect_groups["Sample CG"].members) == 1
 
 
 def test_person_attribute_extraction_from_field_data(
-    field_data_with_personal_attribute: List[Any], field_definitions: Dict[str, str]
+    pco_field_data_with_personal_attribute: List[Any],
+    field_dispatcher,
+    person_manager,
+    connect_group_person_manager,
 ):
-    pco = stub(iterate=lambda *args, **kwargs: field_data_with_personal_attribute)
     # noinspection PyTypeChecker
-    connect_group_membership, personal_attributes = process_field_data(
-        pco, field_definitions
+    fdp = FieldDataProcessor(
+        pco_field_data_with_personal_attribute,
+        "dummy",
+        ["dummy"],
+        person_manager,
+        connect_group_person_manager,
     )
-    assert personal_attributes == {"2373583": {"87410": "02/11/1997"}}
-    assert connect_group_membership == {}
+    fdp.process_field_data(field_dispatcher)
+    person = person_manager._people[2373583]
+    assert person.id == 2373583
+    assert person.personal_attributes["Water Baptism Date"] == "02/11/1997"
+    assert connect_group_person_manager.connect_groups == {}
 
 
 def test_get_person_name_from_id(person_data: Dict[str, str]):
     pco = stub(get=lambda *args, **kwargs: person_data)
-    assert get_person_name_from_id(pco, "dummy") == "Some Guy"
+    # assert get_person_name_from_id(pco, "dummy") == "Some Guy"
