@@ -1,7 +1,6 @@
 import json
 from typing import Any, List
 
-import pypco
 import pytest
 from pretend import stub
 
