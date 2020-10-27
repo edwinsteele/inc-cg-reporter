@@ -16,6 +16,7 @@ from inc_cg_reporter.connect_group import (
 class ConnectGroupWorksheetGenerator:
 
     WIDTH_MULTIPLIER_OVER_FIXED = 1.2
+    NAME_COLUMN_WIDTH = 22
 
     def __init__(self, field_list: List[str]):
         self._field_list = field_list
@@ -46,7 +47,7 @@ class ConnectGroupWorksheetGenerator:
 
     def style(self, ws: Worksheet):
         # Space for names
-        ws.column_dimensions["A"].width = 30
+        ws.column_dimensions["A"].width = self.NAME_COLUMN_WIDTH
         # Then size all other columns based on name of column (values are all
         #  dates, so won't be the limiting factor)
         for col_name, col_index in self._column_locations.items():
@@ -79,6 +80,12 @@ class ConnectGroupWorkbookManager:
         about_sheet.title = "About"
         now_au = datetime.datetime.now(tz=ZoneInfo("Australia/Sydney"))
         about_sheet["A1"] = "Created: {}".format(now_au.ctime())
+        about_sheet["A2"] = "Connect Group Count: {}".format(
+            self._cgpm.connect_groups_count
+        )
+        about_sheet["A3"] = "Connect Group Total Member Count: {}".format(
+            self._cgpm.connect_groups_member_count
+        )
 
     def create(self) -> None:
         for connect_group in self._cgpm.connect_groups.values():

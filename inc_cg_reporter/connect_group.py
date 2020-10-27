@@ -74,3 +74,11 @@ class ConnectGroupPersonManager:
                 person.name = ConnectGroupPersonManager.get_person_name_from_id(
                     pco, person.id
                 )
+
+    @property
+    def connect_groups_count(self):
+        return len(self.connect_groups)
+
+    @property
+    def connect_groups_member_count(self):
+        return sum([len(cg.members) for cg in self.connect_groups.values()])
