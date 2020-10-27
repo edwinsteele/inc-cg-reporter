@@ -43,6 +43,7 @@ def run() -> None:
     cg_workbook_manager = ConnectGroupWorkbookManager(
         connect_group_person_manager, cg_worksheet_generator
     )
+    cg_workbook_manager.create()
     cg_workbook_manager.save("inc_cg.xlsx")
 
 

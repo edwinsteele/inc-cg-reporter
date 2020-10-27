@@ -11,6 +11,7 @@ requests = "^2.24.0"
 daiquiri = "^2.1.1"
 pypco = "^1.1.0"
 openpyxl = "^3.0.5"
+"backports.zoneinfo" = { version = "^0.2.1", python = "<3.9" }
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0.1"
