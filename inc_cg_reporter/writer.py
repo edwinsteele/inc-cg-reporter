@@ -14,21 +14,23 @@ from inc_cg_reporter.connect_group import (
 
 
 class ConnectGroupWorksheetGenerator:
+    """Creates a well formatted worksheet for a Connect Group"""
 
     WIDTH_MULTIPLIER_OVER_FIXED = 1.2
-    NAME_COLUMN_WIDTH = 22
+    FIRST_COLUMN_WIDTH = 22
+    FIRST_ROW_HEIGHT = 2
 
     def __init__(self, field_list: List[str]):
-        self._field_list = field_list
-        # name is the first column, and column indexes start from 1 and enumerate
-        #  starts uses zero-based counting
+        # column indexes start from 1 and enumerate uses zero-based counting,
+        #  so we need to bump our column number by one
         self._column_locations = {
-            col_name: col_number + 2
-            for col_number, col_name in (enumerate(self._field_list))
+            col_name: col_number + 1 for col_number, col_name in (enumerate(field_list))
         }
 
     def person_as_row_values(self, person: Person) -> Dict[int, str]:
-        row = {1: person.name}
+        row = {}
+        # XXX this generator shouldn't need to know where to find the personal
+        #  attributes on the person.
         for column_name, value in person.personal_attributes.items():
             row[self._column_locations[column_name]] = value
 
@@ -46,16 +48,16 @@ class ConnectGroupWorksheetGenerator:
             ws.cell(row=1, column=col_index, value=col_name)
 
     def style(self, ws: Worksheet):
-        # Space for names
-        ws.column_dimensions["A"].width = self.NAME_COLUMN_WIDTH
-        # Then size all other columns based on name of column (values are all
+        # Size all columns based on name of column (values are all
         #  dates, so won't be the limiting factor)
         for col_name, col_index in self._column_locations.items():
             # column_dimensions requires a column name, not an index
             ws.column_dimensions[get_column_letter(col_index)].width = (
                 len(col_name) * self.WIDTH_MULTIPLIER_OVER_FIXED
             )
-        # Style name column
+        # Then override the first column width (it's like a header)
+        ws.column_dimensions["A"].width = self.FIRST_COLUMN_WIDTH
+        # Style the first column in a header-like way
         for cell in next(iter(ws.iter_cols(min_col=1, max_col=1))):
             cell.style = "40 % - Accent1"
 

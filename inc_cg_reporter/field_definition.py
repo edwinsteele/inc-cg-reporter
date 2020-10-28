@@ -1,18 +1,24 @@
+from __future__ import annotations
 import logging
 from typing import Dict, List, Callable
 
 import daiquiri
 import pypco
 
-from inc_cg_reporter.connect_group import (
-    ConnectGroupPersonManager,
-    PersonManager,
-)
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from inc_cg_reporter.connect_group import (
+        ConnectGroupPersonManager,
+        PersonManager,
+    )
 
 daiquiri.setup(level=logging.INFO)
 logger = daiquiri.getLogger(__name__)
 
+
 CONNECT_GROUP_FIELD_DEFINITION_NAME = "Connect Group"
+PERSONAL_ATTRIBUTE_NAME = "Name"
 PERSONAL_ATTRIBUTE_FIELD_DEFINITIONS = [
     "Salvation Date",
     "Recommitment Date",

@@ -5,6 +5,8 @@ from typing import List, Dict
 import daiquiri
 import pypco
 
+from inc_cg_reporter.field_definition import PERSONAL_ATTRIBUTE_NAME
+
 daiquiri.setup(level=logging.INFO)
 logger = daiquiri.getLogger(__name__)
 
@@ -12,7 +14,6 @@ logger = daiquiri.getLogger(__name__)
 @dataclass
 class Person:
     id: int
-    name: str = ""
     personal_attributes: Dict[str, str] = field(default_factory=dict)
 
 
@@ -71,8 +72,10 @@ class ConnectGroupPersonManager:
     def populate_names_for_people(self, pco: pypco.PCO):
         for connect_group in self.connect_groups.values():
             for person in connect_group.members:
-                person.name = ConnectGroupPersonManager.get_person_name_from_id(
-                    pco, person.id
+                self._person_manager.add_attribute(
+                    PERSONAL_ATTRIBUTE_NAME,
+                    ConnectGroupPersonManager.get_person_name_from_id(pco, person.id),
+                    person.id,
                 )
 
     @property
