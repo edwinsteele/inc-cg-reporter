@@ -2,7 +2,7 @@ from typing import List, Any, Dict
 
 from pretend import stub
 
-from inc_cg_reporter.connect_group import ConnectGroupPersonManager
+from inc_cg_reporter.connect_group import ConnectGroupMembershipManager
 from inc_cg_reporter.field_definition import FieldDataProcessor
 
 
@@ -49,4 +49,6 @@ def test_person_attribute_extraction_from_field_data(
 
 def test_get_person_name_from_id(person_data: Dict[str, str]):
     pco = stub(get=lambda *args, **kwargs: person_data)
-    assert ConnectGroupPersonManager.get_person_name_from_id(pco, 12345) == "Some Guy"
+    assert (
+        ConnectGroupMembershipManager.get_person_name_from_id(pco, 12345) == "Some Guy"
+    )

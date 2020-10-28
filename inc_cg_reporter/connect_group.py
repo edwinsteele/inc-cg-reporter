@@ -36,6 +36,11 @@ class PersonManager:
         return person
 
     def add_attribute(self, field_name: str, field_value: str, person_id: int):
+        # XXX - this class manages people, but also dictates how fields are stored
+        #  on the person object, which means that the ConnectGroupWorksheetGenerator
+        #  needs more detail about the People object than is appropriate.
+        # Needs a refactor to extract field mapping methods, principally so that
+        #  the CGWG doesn't need to know about the internals of people objects.
         logger.info(
             "Adding attribute %s with value %s to person with id %s",
             field_name,
@@ -46,7 +51,7 @@ class PersonManager:
         person.personal_attributes[field_name] = field_value
 
 
-class ConnectGroupPersonManager:
+class ConnectGroupMembershipManager:
     def __init__(self, pm: PersonManager):
         self.connect_groups: Dict[str, ConnectGroup] = {}
         self._person_manager = pm
@@ -74,7 +79,9 @@ class ConnectGroupPersonManager:
             for person in connect_group.members:
                 self._person_manager.add_attribute(
                     PERSONAL_ATTRIBUTE_NAME,
-                    ConnectGroupPersonManager.get_person_name_from_id(pco, person.id),
+                    ConnectGroupMembershipManager.get_person_name_from_id(
+                        pco, person.id
+                    ),
                     person.id,
                 )
 

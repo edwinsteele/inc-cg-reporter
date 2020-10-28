@@ -8,7 +8,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from inc_cg_reporter.connect_group import (
     ConnectGroup,
-    ConnectGroupPersonManager,
+    ConnectGroupMembershipManager,
     Person,
 )
 
@@ -68,13 +68,15 @@ class ConnectGroupWorksheetGenerator:
 
 
 class ConnectGroupWorkbookManager:
+    """An excel workbook, with sheets per connect group and a summary sheet"""
+
     def __init__(
         self,
-        cgpm: ConnectGroupPersonManager,
-        cgwsg: ConnectGroupWorksheetGenerator,
+        membership_manager: ConnectGroupMembershipManager,
+        worksheet_generator: ConnectGroupWorksheetGenerator,
     ):
-        self._cgpm = cgpm
-        self._cgwsg = cgwsg
+        self._membership_manager = membership_manager
+        self._worksheet_generator = worksheet_generator
         self._workbook = Workbook()
 
     def insert_title_sheet(self) -> None:
@@ -83,17 +85,17 @@ class ConnectGroupWorkbookManager:
         now_au = datetime.datetime.now(tz=ZoneInfo("Australia/Sydney"))
         about_sheet["A1"] = "Created: {}".format(now_au.ctime())
         about_sheet["A2"] = "Connect Group Count: {}".format(
-            self._cgpm.connect_groups_count
+            self._membership_manager.connect_groups_count
         )
         about_sheet["A3"] = "Connect Group Total Member Count: {}".format(
-            self._cgpm.connect_groups_member_count
+            self._membership_manager.connect_groups_member_count
         )
 
     def create(self) -> None:
-        for connect_group in self._cgpm.connect_groups.values():
+        for connect_group in self._membership_manager.connect_groups.values():
             ws = self._workbook.create_sheet()
-            self._cgwsg.populate(ws, connect_group)
-            self._cgwsg.style(ws)
+            self._worksheet_generator.populate(ws, connect_group)
+            self._worksheet_generator.style(ws)
 
         # Remove the blank sheet that's created initially
         self._workbook.remove(self._workbook.worksheets[0])

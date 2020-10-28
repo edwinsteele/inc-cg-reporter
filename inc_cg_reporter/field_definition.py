@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from inc_cg_reporter.connect_group import (
-        ConnectGroupPersonManager,
+        ConnectGroupMembershipManager,
         PersonManager,
     )
 
@@ -19,7 +19,7 @@ logger = daiquiri.getLogger(__name__)
 
 CONNECT_GROUP_FIELD_DEFINITION_NAME = "Connect Group"
 PERSONAL_ATTRIBUTE_NAME = "Name"
-PERSONAL_ATTRIBUTE_FIELD_DEFINITIONS = [
+PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
     "Salvation Date",
     "Recommitment Date",
     "Water Baptism Date",
@@ -32,7 +32,7 @@ PERSONAL_ATTRIBUTE_FIELD_DEFINITIONS = [
 
 
 class PlanningCentreFieldDefinitionMapper:
-    """knows how to map field IDs to names and vice versa. Doesn't know about types"""
+    """Maps planning centre field definition ids to readable field names"""
 
     def __init__(self, pco: pypco.PCO, field_names: List[str]):
         self.__pco = pco
@@ -56,7 +56,7 @@ class PlanningCentreFieldDefinitionMapper:
 
         return field_defs
 
-    def populate(self):
+    def build_map(self):
         self.field_defs_id_by_name = self.get_field_definition_ids()
         logger.info(self.field_defs_id_by_name)
         self.field_defs_name_by_id = {
@@ -64,18 +64,20 @@ class PlanningCentreFieldDefinitionMapper:
         }
 
 
-class PlanningCentreFieldDispatcher:
-    """Routes field contents (by field_id) to act on objects, using nice names"""
+class PlanningCentreFieldHandler:
+    """Routes fields (by field_id) to methods"""
 
     def __init__(self, pcfdm: PlanningCentreFieldDefinitionMapper):
         self._field_handler_map: Dict[int, Callable[[str, str, int], None]] = {}
         self._field_definition_mapper = pcfdm
 
-    def register(self, field_name: str, handler: Callable[[str, str, int], None]):
+    def register_method(
+        self, field_name: str, handler: Callable[[str, str, int], None]
+    ):
         field_id = self._field_definition_mapper.field_defs_id_by_name[field_name]
         self._field_handler_map[field_id] = handler
 
-    def dispatch(self, field_id: int, field_value: str, person_id: int):
+    def dispatch_field(self, field_id: int, field_value: str, person_id: int):
         if (
             field_name := self._field_definition_mapper.field_defs_name_by_id.get(
                 field_id
@@ -91,7 +93,7 @@ class FieldDataProcessor:
         connect_group_field_name: str,
         personal_attribute_field_names: List[str],
         pm: PersonManager,
-        cgm: ConnectGroupPersonManager,
+        cgm: ConnectGroupMembershipManager,
     ):
         self.__pco = pco
         self.__connect_group_field_name = connect_group_field_name
@@ -105,19 +107,16 @@ class FieldDataProcessor:
             field_id = datum["data"]["relationships"]["field_definition"]["data"]["id"]
             person_id = datum["data"]["relationships"]["customizable"]["data"]["id"]
             field_value = datum["data"]["attributes"]["value"]
-
-            # connect_group_membership[field_value].append(person_id)
-            # personal_attributes[person_id][field_id] = field_value
-            field_dispatcher.dispatch(int(field_id), field_value, int(person_id))
+            field_dispatcher.dispatch_field(int(field_id), field_value, int(person_id))
 
     def process(self):
         field_definition_mapper = PlanningCentreFieldDefinitionMapper(
             self.__pco,
             [self.__connect_group_field_name] + self.__personal_attribute_field_names,
         )
-        field_definition_mapper.populate()
-        field_dispatcher = PlanningCentreFieldDispatcher(field_definition_mapper)
-        field_dispatcher.register(self.__connect_group_field_name, self.__cgm.add)
+        field_definition_mapper.build_map()
+        field_handler = PlanningCentreFieldHandler(field_definition_mapper)
+        field_handler.register_method(self.__connect_group_field_name, self.__cgm.add)
         for paf_name in self.__personal_attribute_field_names:
-            field_dispatcher.register(paf_name, self.__pm.add_attribute)
-        self.process_field_data(field_dispatcher)
+            field_handler.register_method(paf_name, self.__pm.add_attribute)
+        self.process_field_data(field_handler)

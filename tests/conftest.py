@@ -4,12 +4,12 @@ from typing import Any, List
 import pytest
 from pretend import stub
 
-from inc_cg_reporter.connect_group import ConnectGroupPersonManager, PersonManager
+from inc_cg_reporter.connect_group import ConnectGroupMembershipManager, PersonManager
 from inc_cg_reporter.field_definition import (
     PlanningCentreFieldDefinitionMapper,
-    PlanningCentreFieldDispatcher,
+    PlanningCentreFieldHandler,
     CONNECT_GROUP_FIELD_DEFINITION_NAME,
-    PERSONAL_ATTRIBUTE_FIELD_DEFINITIONS,
+    PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES,
 )
 
 
@@ -64,17 +64,17 @@ def person_manager():
 
 @pytest.fixture
 def connect_group_person_manager(person_manager):
-    return ConnectGroupPersonManager(person_manager)
+    return ConnectGroupMembershipManager(person_manager)
 
 
 @pytest.fixture
 def field_dispatcher(
     field_definition_mapper, person_manager, connect_group_person_manager
-) -> PlanningCentreFieldDispatcher:
-    field_dispatcher = PlanningCentreFieldDispatcher(field_definition_mapper)
-    field_dispatcher.register(
+) -> PlanningCentreFieldHandler:
+    field_dispatcher = PlanningCentreFieldHandler(field_definition_mapper)
+    field_dispatcher.register_method(
         CONNECT_GROUP_FIELD_DEFINITION_NAME, connect_group_person_manager.add
     )
-    for paf_name in PERSONAL_ATTRIBUTE_FIELD_DEFINITIONS:
-        field_dispatcher.register(paf_name, person_manager.add_attribute)
+    for paf_name in PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES:
+        field_dispatcher.register_method(paf_name, person_manager.add_attribute)
     return field_dispatcher
