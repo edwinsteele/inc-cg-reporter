@@ -13,6 +13,7 @@ from inc_cg_reporter.connect_group import (
     ConnectGroupMembershipManager,
     Person,
 )
+from inc_cg_reporter.field_definition import PERSONAL_ATTRIBUTE_NAME
 
 
 class ConnectGroupWorksheetGenerator:
@@ -48,7 +49,9 @@ class ConnectGroupWorksheetGenerator:
     def populate(self, ws: Worksheet, cg: ConnectGroup):
         ws.title = cg.name
         self.create_column_headers(ws)
-        for person in cg.members:
+        for person in sorted(
+            cg.members, key=lambda p: p.personal_attributes[PERSONAL_ATTRIBUTE_NAME]
+        ):
             ws.append(self.person_as_row_values(person))
 
     def create_column_headers(self, ws: Worksheet):
