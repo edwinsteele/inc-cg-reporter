@@ -25,9 +25,10 @@ PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
     "Water Baptism Date",
     "Holy Spirit Baptism Date",
     "Encounter Date",
-    "Faith Essentials Begun",
-    "Discipleship Essentials Begun",
-    "Faith Essentials Complete",
+    "FE Start",
+    "FE Finish",
+    "DE Start",
+    "DE Finish",
 ]
 
 
