@@ -2,10 +2,11 @@ import datetime
 from typing import List, Dict
 
 from backports.zoneinfo import ZoneInfo
-from more_itertools import first, last
+from more_itertools import first
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Side
 from openpyxl.utils import get_column_letter
+from openpyxl.worksheet.page import PrintPageSetup
 from openpyxl.worksheet.worksheet import Worksheet
 
 from inc_cg_reporter.connect_group import (
@@ -59,6 +60,21 @@ class ConnectGroupWorksheetGenerator:
         for col_name, col_index in self._column_locations.items():
             ws.cell(row=1, column=col_index, value=col_name)
 
+    def insert_heading(self, ws: Worksheet):
+        # This can only be run after the table has been populated and styled
+        #  given it prepends rows to the sheet. Ugh.
+        ws.insert_rows(0)
+        ws["A1"] = ws.title
+        ws.merge_cells("A1:{}1".format(get_column_letter(ws.max_column)))
+        # Style merged cells using the top left cell reference
+        ws["A1"].style = "Headline 1"
+        # alignment is overwritten by style, so set it afterwards
+        ws["A1"].alignment = Alignment(horizontal="center", vertical="center")
+        no_border = Side(border_style=None)
+        ws["A1"].border = Border(
+            left=no_border, right=no_border, top=no_border, outline=False
+        )
+
     def style(self, ws: Worksheet):
         # Give columns a fixed width so each sheet can print onto a single
         #  A4 in landscape mode.
@@ -89,16 +105,10 @@ class ConnectGroupWorksheetGenerator:
                 cell.alignment = Alignment(horizontal="center")
                 cell.border = self.THIN_BORDER
 
-        # Add a table border - don't assign new border objects in each loop,
-        #  because it'll overwrite previous border settings
-        # for cell in first(ws.rows):
-        #     cell.border.top.border_style = "thick"
-        # for cell in last(ws.rows):
-        #     cell.border.bottom.border_style = "thick"
-        # for cell in first(ws.columns):
-        #     cell.border.left.border_style = "thick"
-        # for cell in last(ws.columns):
-        #     cell.border.right.border_style = "thick"
+    def setup_print_page_setup(self, ws):
+        # fitToWidth isn't recognised on numbers. Hardcoding a scale is ghastly,
+        #  but it works and will update if it's inappropriate
+        ws.page_setup = PrintPageSetup(orientation="landscape", scale=75)
 
 
 class ConnectGroupWorkbookManager:
@@ -149,6 +159,8 @@ class ConnectGroupWorkbookManager:
             ws = self._workbook.create_sheet()
             self._worksheet_generator.populate(ws, connect_group)
             self._worksheet_generator.style(ws)
+            self._worksheet_generator.insert_heading(ws)
+            self._worksheet_generator.setup_print_page_setup(ws)
 
         # Remove the blank sheet that's created initially
         self._workbook.remove(self._workbook.worksheets[0])
