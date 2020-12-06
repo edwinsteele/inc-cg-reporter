@@ -49,9 +49,10 @@ def field_definition_mapper() -> PlanningCentreFieldDefinitionMapper:
         "Water Baptism Date": 87410,
         "Holy Spirit Baptism Date": 87411,
         "Encounter Date": 88699,
-        "Faith Essentials Begun": 299202,
-        "Discipleship Essentials Begun": 283022,
-        "Faith Essentials Complete": 283032,
+        "FE Start": 299202,
+        "FE Finish": 283032,
+        "DE Start": 283022,
+        "DE Finish": 420172,
     }
     fdm.field_defs_name_by_id = {v: k for k, v in fdm.field_defs_id_by_name.items()}
     return fdm
