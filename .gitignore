@@ -132,3 +132,10 @@ dmypy.json
 
 #Vim
 *.swp
+
+# Excel files. Don't risk committing sensitive data
+*.xlsx
+*.xls
+
+# Mac
+.DS_Store
