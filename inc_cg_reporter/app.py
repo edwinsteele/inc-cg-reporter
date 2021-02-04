@@ -27,7 +27,7 @@ def get_pco() -> pypco.PCO:
     return pypco.PCO(app_id, app_secret)
 
 
-def run() -> None:
+def run(event, context) -> None:
     pco = get_pco()
     person_manager = PersonManager()
     connect_group_person_manager = ConnectGroupMembershipManager(person_manager)
@@ -56,4 +56,4 @@ def run() -> None:
 
 
 if __name__ == "__main__":
-    run()
+    run({}, {})

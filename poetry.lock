@@ -81,6 +81,7 @@ localstack-client = "*"
 [[package]]
 category = "main"
 description = "Backport of the standard library zoneinfo module"
+marker = "python_version < \"3.9\""
 name = "backports.zoneinfo"
 optional = false
 python-versions = ">=3.6"
@@ -294,12 +295,12 @@ python-versions = "*"
 version = "0.6.1"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "More routines for operating on iterables, beyond itertools"
 name = "more-itertools"
 optional = false
 python-versions = ">=3.5"
-version = "8.5.0"
+version = "8.6.0"
 
 [[package]]
 category = "dev"
@@ -621,7 +622,7 @@ python-versions = "*"
 version = "1.12.1"
 
 [metadata]
-content-hash = "00bdd547e9996fbbabbe24b986e94df8b1268004b719af78bbef5404ceccfe4c"
+content-hash = "da8fd0ea1fba364f25c6c418154b3729c9af69a82efe2fff7af373a36393f834"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -766,8 +767,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 more-itertools = [
-    {file = "more-itertools-8.5.0.tar.gz", hash = "sha256:6f83822ae94818eae2612063a5101a7311e68ae8002005b5e05f03fd74a86a20"},
-    {file = "more_itertools-8.5.0-py3-none-any.whl", hash = "sha256:9b30f12df9393f0d28af9210ff8efe48d10c94f73e5daf886f10c4b0b0b4f03c"},
+    {file = "more-itertools-8.6.0.tar.gz", hash = "sha256:b3a9005928e5bed54076e6e549c792b306fddfe72b2d1d22dd63d42d5d3899cf"},
+    {file = "more_itertools-8.6.0-py3-none-any.whl", hash = "sha256:8e1a2a43b2f2727425f2b5839587ae37093f19153dc26c0927d1048ff6557330"},
 ]
 mypy = [
     {file = "mypy-0.782-cp35-cp35m-macosx_10_6_x86_64.whl", hash = "sha256:2c6cde8aa3426c1682d35190b59b71f661237d74b053822ea3d748e2c9578a7c"},
