@@ -52,7 +52,9 @@ def run(event, context) -> None:
         connect_group_person_manager, cg_worksheet_generator
     )
     cg_workbook_manager.create()
-    cg_workbook_manager.save("inc_cg.xlsx")
+    saved_file = cg_workbook_manager.save()
+    logger.info("Saved file stored as %s", saved_file.resolve())
+    logger.info("Stat info: %s", os.stat(saved_file))
 
 
 if __name__ == "__main__":

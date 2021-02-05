@@ -41,7 +41,7 @@ class PersonManager:
         #  needs more detail about the People object than is appropriate.
         # Needs a refactor to extract field mapping methods, principally so that
         #  the CGWG doesn't need to know about the internals of people objects.
-        logger.info(
+        logger.debug(
             "Adding attribute %s with value %s to person with id %s",
             field_name,
             field_value,
@@ -57,7 +57,7 @@ class ConnectGroupMembershipManager:
         self._person_manager = pm
 
     def add(self, _: str, connect_group_name: str, person_id: int):
-        logger.info(
+        logger.debug(
             "Adding person %s to Connect Group %s", person_id, connect_group_name
         )
         cg = self.connect_groups.get(connect_group_name)

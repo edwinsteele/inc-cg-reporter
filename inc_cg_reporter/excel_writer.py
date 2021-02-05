@@ -1,4 +1,6 @@
 import datetime
+import pathlib
+from tempfile import NamedTemporaryFile
 from typing import List, Dict
 
 from backports.zoneinfo import ZoneInfo
@@ -114,6 +116,8 @@ class ConnectGroupWorksheetGenerator:
 class ConnectGroupWorkbookManager:
     """An excel workbook, with sheets per connect group and a summary sheet"""
 
+    OUTPUT_FILENAME = "inc_cg.xlsx"
+
     def __init__(
         self,
         membership_manager: ConnectGroupMembershipManager,
@@ -166,5 +170,9 @@ class ConnectGroupWorkbookManager:
         self._workbook.remove(self._workbook.worksheets[0])
         self.insert_title_sheet()
 
-    def save(self, filename: str) -> None:
-        self._workbook.save(filename)
+    def save(self) -> pathlib.Path:
+        output_file = NamedTemporaryFile(delete=False)
+        self._workbook.save(output_file.name)
+        output_file.close()
+        output_path = pathlib.Path(output_file.name)
+        return output_path.rename(output_path.with_name(self.OUTPUT_FILENAME))
