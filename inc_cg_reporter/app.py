@@ -28,6 +28,7 @@ def get_pco() -> pypco.PCO:
 
 
 def run(event, context) -> None:
+    logger.info("Starting...")
     pco = get_pco()
     person_manager = PersonManager()
     connect_group_person_manager = ConnectGroupMembershipManager(person_manager)
@@ -40,8 +41,10 @@ def run(event, context) -> None:
         person_manager,
         connect_group_person_manager,
     )
+    logger.info("Populating person and connect group manager instances")
     field_data_processor.process()
     # Pull people's names from Planning Centre
+    logger.info("Pulling people's names and matching with IDs")
     connect_group_person_manager.populate_names_for_people(pco)
     # Now that Names have been populated, we can pass the full list of attributes
     #  to be used as columns, so we know how to generate worksheets for connect groups
@@ -51,6 +54,7 @@ def run(event, context) -> None:
     cg_workbook_manager = ConnectGroupWorkbookManager(
         connect_group_person_manager, cg_worksheet_generator
     )
+    logger.info("Creating worksheet")
     cg_workbook_manager.create()
     saved_file = cg_workbook_manager.save()
     logger.info("Saved file stored as %s", saved_file.resolve())

@@ -115,9 +115,11 @@ class FieldDataProcessor:
             self.__pco,
             [self.__connect_group_field_name] + self.__personal_attribute_field_names,
         )
+        logger.info("Building map")
         field_definition_mapper.build_map()
         field_handler = PlanningCentreFieldHandler(field_definition_mapper)
         field_handler.register_method(self.__connect_group_field_name, self.__cgm.add)
         for paf_name in self.__personal_attribute_field_names:
             field_handler.register_method(paf_name, self.__pm.add_attribute)
+        logger.info("Processing field data")
         self.process_field_data(field_handler)
