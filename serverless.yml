@@ -12,6 +12,12 @@ provider:
   profile: serverless-wordspeak-inc-reporter
   stage: prod
   region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - ses:SendRawEmail
+      Resource:
+        - 'arn:aws:ses:us-east-1:663011419911:identity/*'
 custom:
   pythonRequirements:
     dockerizePip: non-linux

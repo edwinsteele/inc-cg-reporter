@@ -1,6 +1,12 @@
 import logging
 import os
+import pathlib
+from datetime import date
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
+import boto3
 import daiquiri
 import pypco
 
@@ -25,6 +31,42 @@ def get_pco() -> pypco.PCO:
     app_id = os.environ["PC_APPLICATION_ID"]
     app_secret = os.environ["PC_SECRET"]
     return pypco.PCO(app_id, app_secret)
+
+
+def send_summary_email(saved_file: pathlib.Path):
+    msg = MIMEMultipart()
+    msg["Subject"] = "INC CG report"
+    msg["From"] = "edwin@wordspeak.org"
+    msg["To"] = "edwin@wordspeak.org"
+
+    current_datestamp = date.today().strftime("%Y-%m-%d")
+
+    # Set message body
+    body = MIMEText(
+        "Current INC Connect Group Spreadsheet attached.\n"
+        "Reply to this email if you have questions.\n"
+        "--Edwin",
+        "plain",
+    )
+    msg.attach(body)
+
+    with open(saved_file, "rb") as attachment:
+        part = MIMEApplication(attachment.read())
+        part.add_header(
+            "Content-Disposition",
+            "attachment",
+            filename=f"inc_cg-{current_datestamp}.xlsx",
+        )
+    msg.attach(part)
+
+    # Convert message to string and send
+    ses_client = boto3.client("ses", region_name="us-east-1")
+    response = ses_client.send_raw_email(
+        Source="edwin@wordspeak.org",
+        Destinations=["edwin@wordspeak.org"],
+        RawMessage={"Data": msg.as_string()},
+    )
+    print(response)
 
 
 def run(event, context) -> None:
@@ -59,6 +101,7 @@ def run(event, context) -> None:
     saved_file = cg_workbook_manager.save()
     logger.info("Saved file stored as %s", saved_file.resolve())
     logger.info("Stat info: %s", os.stat(saved_file))
+    send_summary_email(saved_file)
 
 
 if __name__ == "__main__":
