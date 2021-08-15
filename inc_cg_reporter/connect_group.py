@@ -72,7 +72,9 @@ class ConnectGroupMembershipManager:
     def get_person_name_from_id(pco: pypco.PCO, person_id: int) -> str:
         params = {"where[id]": person_id}
         person = pco.get("/people/v2/people", **params)
-        return str(person["data"][0]["attributes"]["name"])
+        if len(person["data"]) > 0:
+            return str(person["data"][0]["attributes"]["name"])
+        return f"Name Missing (id: {person_id})"
 
     def populate_names_for_people(self, pco: pypco.PCO):
         for connect_group in self.connect_groups.values():
