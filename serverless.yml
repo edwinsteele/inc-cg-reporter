@@ -46,4 +46,6 @@ functions:
     handler: inc_cg_reporter/app.run
     timeout: 900
     memorySize: 256
+    events:
+      - schedule: cron(0 12 1 * ? *)  # midday on the first of the month
 
