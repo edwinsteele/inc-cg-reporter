@@ -27,8 +27,10 @@ PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
     "Encounter Date",
     "FE Start",
     "FE Finish",
-    "DE Start",
-    "DE Finish",
+    "DE 1 Start",
+    "DE 1 Finish",
+    "DE 2 Start ",
+    "DE 2 Finish",
 ]
 
 
