@@ -20,6 +20,7 @@ logger = daiquiri.getLogger(__name__)
 CONNECT_GROUP_FIELD_DEFINITION_NAME = "Connect Group"
 PERSONAL_ATTRIBUTE_NAME = "Name"
 PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
+    "Decision Date",
     "Recommitment Date",
     "Water Baptism Date",
     "Holy Spirit Baptism Date",
