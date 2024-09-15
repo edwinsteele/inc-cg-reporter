@@ -21,15 +21,11 @@ CONNECT_GROUP_FIELD_DEFINITION_NAME = "Connect Group"
 PERSONAL_ATTRIBUTE_NAME = "Name"
 PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
     "Decision Date",
-    "Recommitment Date",
     "Water Baptism Date",
     "Holy Spirit Baptism Date",
     "Encounter Date",
-    "FE Start",
     "FE Finish",
-    "DE 1 Start",
     "DE 1 Finish",
-    "DE 2 Start ",
     "DE 2 Finish",
 ]
 
