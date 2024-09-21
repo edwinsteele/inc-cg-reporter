@@ -19,7 +19,8 @@ logger = daiquiri.getLogger(__name__)
 
 CONNECT_GROUP_FIELD_DEFINITION_NAME = "Connect Group"
 PERSONAL_ATTRIBUTE_NAME = "Name"
-PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
+# field_definition data[attributes][data_type] = 'string' or 'date'
+PERSONAL_ATTRIBUTE_SINGLE_VALUE_FIELD_DEFINITION_NAMES = [
     "Decision Date",
     "Water Baptism Date",
     "Holy Spirit Baptism Date",
@@ -27,6 +28,10 @@ PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES = [
     "FE Finish",
     "DE 1 Finish",
     "DE 2 Finish",
+]
+# field_definition data[attributes][data_type] = 'checkboxes'
+PERSONAL_ATTRIBUTE_MULTI_VALUE_FIELD_DEFINITION_NAMES = [
+    "Team",
 ]
 
 
@@ -90,13 +95,19 @@ class FieldDataProcessor:
         self,
         pco: pypco.PCO,
         connect_group_field_name: str,
-        personal_attribute_field_names: List[str],
+        personal_attribute_single_value_field_names: List[str],
+        personal_attribute_multi_value_field_names: List[str],
         pm: PersonManager,
         cgm: ConnectGroupMembershipManager,
     ):
         self.__pco = pco
         self.__connect_group_field_name = connect_group_field_name
-        self.__personal_attribute_field_names = personal_attribute_field_names
+        self.__personal_attribute_single_value_field_names = (
+            personal_attribute_single_value_field_names
+        )
+        self.__personal_attribute_multi_value_field_names = (
+            personal_attribute_multi_value_field_names
+        )
         self.__pm = pm
         self.__cgm = cgm
 
@@ -111,13 +122,17 @@ class FieldDataProcessor:
     def process(self):
         field_definition_mapper = PlanningCentreFieldDefinitionMapper(
             self.__pco,
-            [self.__connect_group_field_name] + self.__personal_attribute_field_names,
+            [self.__connect_group_field_name]
+            + self.__personal_attribute_single_value_field_names
+            + self.__personal_attribute_multi_value_field_names,
         )
         logger.info("Building map")
         field_definition_mapper.build_map()
         field_handler = PlanningCentreFieldHandler(field_definition_mapper)
         field_handler.register_method(self.__connect_group_field_name, self.__cgm.add)
-        for paf_name in self.__personal_attribute_field_names:
+        for paf_name in self.__personal_attribute_single_value_field_names:
             field_handler.register_method(paf_name, self.__pm.add_attribute)
+        for paf_name in self.__personal_attribute_multi_value_field_names:
+            field_handler.register_method(paf_name, self.__pm.add_or_extend_attribute)
         logger.info("Processing field data")
         self.process_field_data(field_handler)

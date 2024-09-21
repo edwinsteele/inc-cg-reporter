@@ -15,7 +15,8 @@ from inc_cg_reporter.field_definition import (
     FieldDataProcessor,
     CONNECT_GROUP_FIELD_DEFINITION_NAME,
     PERSONAL_ATTRIBUTE_NAME,
-    PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES,
+    PERSONAL_ATTRIBUTE_SINGLE_VALUE_FIELD_DEFINITION_NAMES,
+    PERSONAL_ATTRIBUTE_MULTI_VALUE_FIELD_DEFINITION_NAMES,
 )
 from inc_cg_reporter.excel_writer import (
     ConnectGroupWorksheetGenerator,
@@ -79,7 +80,8 @@ def run(event, context) -> None:
     field_data_processor = FieldDataProcessor(
         pco,
         CONNECT_GROUP_FIELD_DEFINITION_NAME,
-        PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES,
+        PERSONAL_ATTRIBUTE_SINGLE_VALUE_FIELD_DEFINITION_NAMES,
+        PERSONAL_ATTRIBUTE_MULTI_VALUE_FIELD_DEFINITION_NAMES,
         person_manager,
         connect_group_person_manager,
     )
@@ -91,7 +93,9 @@ def run(event, context) -> None:
     # Now that Names have been populated, we can pass the full list of attributes
     #  to be used as columns, so we know how to generate worksheets for connect groups
     cg_worksheet_generator = ConnectGroupWorksheetGenerator(
-        [PERSONAL_ATTRIBUTE_NAME] + PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES
+        [PERSONAL_ATTRIBUTE_NAME]
+        + PERSONAL_ATTRIBUTE_SINGLE_VALUE_FIELD_DEFINITION_NAMES
+        + PERSONAL_ATTRIBUTE_MULTI_VALUE_FIELD_DEFINITION_NAMES
     )
     cg_workbook_manager = ConnectGroupWorkbookManager(
         connect_group_person_manager, cg_worksheet_generator

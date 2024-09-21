@@ -9,7 +9,7 @@ from inc_cg_reporter.field_definition import (
     PlanningCentreFieldDefinitionMapper,
     PlanningCentreFieldHandler,
     CONNECT_GROUP_FIELD_DEFINITION_NAME,
-    PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES,
+    PERSONAL_ATTRIBUTE_SINGLE_VALUE_FIELD_DEFINITION_NAMES,
 )
 
 
@@ -76,6 +76,6 @@ def field_dispatcher(
     field_dispatcher.register_method(
         CONNECT_GROUP_FIELD_DEFINITION_NAME, connect_group_person_manager.add
     )
-    for paf_name in PERSONAL_ATTRIBUTE_FIELD_DEFINITION_NAMES:
+    for paf_name in PERSONAL_ATTRIBUTE_SINGLE_VALUE_FIELD_DEFINITION_NAMES:
         field_dispatcher.register_method(paf_name, person_manager.add_attribute)
     return field_dispatcher

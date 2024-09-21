@@ -22,8 +22,9 @@ from inc_cg_reporter.field_definition import PERSONAL_ATTRIBUTE_NAME
 class ConnectGroupWorksheetGenerator:
     """Creates a well formatted worksheet for a Connect Group"""
 
-    DATE_TYPE_COLUMN_WIDTH = 15
+    DATE_TYPE_COLUMN_WIDTH = 13
     FIRST_COLUMN_WIDTH = 22
+    TEAM_COLUMN_WIDTH = 26
     FIRST_ROW_HEIGHT = 2
     HEADER_ROW_HEIGHT = 30
     THIN_BORDER = Border(
@@ -81,12 +82,16 @@ class ConnectGroupWorksheetGenerator:
         # Give columns a fixed width so each sheet can print onto a single
         #  A4 in landscape mode.
         for col_name, col_index in self._column_locations.items():
+            if col_name == "Team":
+                cw = self.TEAM_COLUMN_WIDTH
+            else:
+                cw = self.DATE_TYPE_COLUMN_WIDTH
+
             # column_dimensions requires a column name, not an index
-            ws.column_dimensions[
-                get_column_letter(col_index)
-            ].width = self.DATE_TYPE_COLUMN_WIDTH
+            ws.column_dimensions[get_column_letter(col_index)].width = cw
 
         # Then override the first column width (it's like a header)
+
         ws.column_dimensions["A"].width = self.FIRST_COLUMN_WIDTH
         # Style the first column in a header-like way
         for cell in first(ws.columns):
@@ -146,6 +151,18 @@ class ConnectGroupWorkbookManager:
                 "B": self._membership_manager.connect_groups_member_count,
             }
         )
+        # Volunteer Counts:
+        for (
+            volunteer_role,
+            role_count,
+        ) in self._membership_manager.volunteer_count.items():
+            about_sheet.append(
+                {
+                    "A": f"Count of {volunteer_role}:",
+                    "B": role_count,
+                }
+            )
+
         # Show a list of ConnectGroups
         if self._membership_manager.connect_groups_member_count > 0:
             about_sheet.append(

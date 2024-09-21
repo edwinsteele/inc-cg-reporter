@@ -1,4 +1,5 @@
 import logging
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import List, Dict
 
@@ -24,6 +25,9 @@ class ConnectGroup:
 
 
 class PersonManager:
+
+    ADD_EXTEND_SEPARATOR = ","
+
     def __init__(self):
         self._people: Dict[int, Person] = {}
 
@@ -49,6 +53,25 @@ class PersonManager:
         )
         person = self.get(person_id)
         person.personal_attributes[field_name] = field_value
+
+    def add_or_extend_attribute(
+        self, field_name: str, field_value: str, person_id: int
+    ):
+        # Add attribute, preserving existing values if present
+        person = self.get(person_id)
+        if current_field_value := person.personal_attributes.get(field_name):
+            logger.debug(
+                "Extending attribute %s (existing value %s) with value %s to person with id %s",
+                field_name,
+                current_field_value,
+                field_value,
+                person_id,
+            )
+            person.personal_attributes[field_name] = (
+                current_field_value + self.ADD_EXTEND_SEPARATOR + field_value
+            )
+        else:
+            self.add_attribute(field_name, field_value, person_id)
 
 
 class ConnectGroupMembershipManager:
@@ -94,3 +117,13 @@ class ConnectGroupMembershipManager:
     @property
     def connect_groups_member_count(self):
         return sum([len(cg.members) for cg in self.connect_groups.values()])
+
+    @property
+    def volunteer_count(self):
+        vc = Counter()
+        for cg in self.connect_groups.values():
+            for member in cg.members:
+                team_str = member.personal_attributes.get("Team", "")
+                if team_str:
+                    vc.update(team_str.split(","))
+        return vc
