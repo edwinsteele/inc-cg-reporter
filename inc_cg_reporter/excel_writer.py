@@ -135,7 +135,7 @@ class ConnectGroupWorkbookManager:
     def insert_title_sheet(self) -> None:
         about_sheet = self._workbook.create_sheet("About", 0)
         about_sheet.title = "About"
-        about_sheet.column_dimensions["A"].width = 20
+        about_sheet.column_dimensions["A"].width = 30
         about_sheet.column_dimensions["B"].width = 40
         now_au = datetime.datetime.now(tz=ZoneInfo("Australia/Sydney"))
         about_sheet.append({"A": "Created:", "B": now_au.ctime()})
@@ -158,7 +158,7 @@ class ConnectGroupWorkbookManager:
         ) in self._membership_manager.volunteer_count.items():
             about_sheet.append(
                 {
-                    "A": f"Count of {volunteer_role}:",
+                    "A": f"Team size - {volunteer_role}:",
                     "B": role_count,
                 }
             )
