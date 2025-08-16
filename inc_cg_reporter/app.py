@@ -6,7 +6,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-import boto3
+# import boto3
 import daiquiri
 import pypco
 
@@ -61,13 +61,13 @@ def send_summary_email(saved_file: pathlib.Path):
     msg.attach(part)
 
     # Convert message to string and send
-    ses_client = boto3.client("ses", region_name="us-east-1")
-    response = ses_client.send_raw_email(
-        Source="edwin@wordspeak.org",
-        Destinations=["edwin@wordspeak.org"],
-        RawMessage={"Data": msg.as_string()},
-    )
-    print(response)
+    #ses_client = boto3.client("ses", region_name="us-east-1")
+    # response = ses_client.send_raw_email(
+    #     Source="edwin@wordspeak.org",
+    #     Destinations=["edwin@wordspeak.org"],
+    #     RawMessage={"Data": msg.as_string()},
+    # )
+    # print(response)
 
 
 def run(event, context) -> None:

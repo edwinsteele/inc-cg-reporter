@@ -1,5 +1,9 @@
 # inc-cg-reporter
 
+1. `poetry shell`
+2. `poetry install`
+
+
 * `sls deploy`
 * `AWS_CLIENT_TIMEOUT=900000 sls invoke -f generate_report`
 

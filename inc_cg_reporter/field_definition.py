@@ -50,7 +50,8 @@ class PlanningCentreFieldDefinitionMapper:
 
         params = {"per_page": 100}
         for datum in self.__pco.iterate("/people/v2/field_definitions", **params):
-            if (field_name := datum["data"]["attributes"]["name"]) in matching:
+            # Often leading or trailing spaces are accidentally entered. Let's ignore them.
+            if (field_name := datum["data"]["attributes"]["name"].strip()) in matching:
                 field_defs[field_name] = int(datum["data"]["id"])
                 matching.remove(field_name)
 
