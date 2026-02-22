@@ -1,14 +1,17 @@
 import logging
 import os
 import pathlib
+import smtplib
 from datetime import date
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-# import boto3
 import daiquiri
 import pypco
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from inc_cg_reporter.connect_group import PersonManager, ConnectGroupMembershipManager
 from inc_cg_reporter.field_definition import (
@@ -35,14 +38,16 @@ def get_pco() -> pypco.PCO:
 
 
 def send_summary_email(saved_file: pathlib.Path):
+    email_from = os.environ["EMAIL_FROM"]
+    email_to = os.environ["EMAIL_TO"]
+
     msg = MIMEMultipart()
     msg["Subject"] = "INC CG report"
-    msg["From"] = "edwin@wordspeak.org"
-    msg["To"] = "edwin@wordspeak.org"
+    msg["From"] = email_from
+    msg["To"] = email_to
 
     current_datestamp = date.today().strftime("%Y-%m-%d")
 
-    # Set message body
     body = MIMEText(
         "Current INC Connect Group Spreadsheet attached.\n"
         "Reply to this email if you have questions.\n"
@@ -60,17 +65,19 @@ def send_summary_email(saved_file: pathlib.Path):
         )
     msg.attach(part)
 
-    # Convert message to string and send
-    #ses_client = boto3.client("ses", region_name="us-east-1")
-    # response = ses_client.send_raw_email(
-    #     Source="edwin@wordspeak.org",
-    #     Destinations=["edwin@wordspeak.org"],
-    #     RawMessage={"Data": msg.as_string()},
-    # )
-    # print(response)
+    smtp_host = os.environ["SMTP_HOST"]
+    smtp_port = int(os.environ["SMTP_PORT"])
+    smtp_username = os.environ["SMTP_USERNAME"]
+    smtp_password = os.environ["SMTP_PASSWORD"]
+
+    with smtplib.SMTP(smtp_host, smtp_port) as server:
+        server.starttls()
+        server.login(smtp_username, smtp_password)
+        server.sendmail(email_from, [email_to], msg.as_string())
+    logger.info("Email sent to %s", email_to)
 
 
-def run(event, context) -> None:
+def run() -> None:
     logger.info("Starting...")
     pco = get_pco()
     person_manager = PersonManager()
@@ -109,4 +116,4 @@ def run(event, context) -> None:
 
 
 if __name__ == "__main__":
-    run({}, {})
+    run()

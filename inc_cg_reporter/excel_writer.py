@@ -3,7 +3,7 @@ import pathlib
 from tempfile import NamedTemporaryFile
 from typing import List, Dict
 
-from backports.zoneinfo import ZoneInfo
+from zoneinfo import ZoneInfo
 from more_itertools import first
 from openpyxl import Workbook
 from openpyxl.styles import Alignment, Border, Side
