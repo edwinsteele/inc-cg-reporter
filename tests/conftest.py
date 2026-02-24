@@ -44,15 +44,13 @@ def field_definition_mapper() -> PlanningCentreFieldDefinitionMapper:
     fdm = PlanningCentreFieldDefinitionMapper("dummy", [])
     fdm.field_defs_id_by_name = {
         "Connect Group": 401410,
-        "Salvation Date": 88097,
-        "Recommitment Date": 97849,
+        "Decision Date": 88096,
         "Water Baptism Date": 87410,
         "Holy Spirit Baptism Date": 87411,
         "Encounter Date": 88699,
-        "FE Start": 299202,
         "FE Finish": 283032,
-        "DE Start": 283022,
-        "DE Finish": 420172,
+        "DE 1 Finish": 420172,
+        "DE 2 Finish": 420173,
     }
     fdm.field_defs_name_by_id = {v: k for k, v in fdm.field_defs_id_by_name.items()}
     return fdm

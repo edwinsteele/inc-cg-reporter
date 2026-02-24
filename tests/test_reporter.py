@@ -17,6 +17,7 @@ def test_cg_extraction_from_field_data(
         pco_field_data_with_cell_group,
         "dummy",
         ["dummy"],
+        [],
         person_manager,
         connect_group_person_manager,
     )
@@ -37,6 +38,7 @@ def test_person_attribute_extraction_from_field_data(
         pco_field_data_with_personal_attribute,
         "dummy",
         ["dummy"],
+        [],
         person_manager,
         connect_group_person_manager,
     )

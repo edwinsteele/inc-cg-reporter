@@ -15,7 +15,7 @@ more_itertools = "^8.6.0"
 python-dotenv = "^1.0.0"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^6.0.1"
+pytest = "^7.0"
 black = "^24.0"
 mypy = "^1.0"
 tox = "^3.20.0"
