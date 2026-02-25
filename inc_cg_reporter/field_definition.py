@@ -110,6 +110,10 @@ class PlanningCentreFieldHandler:
         field_id = self._field_definition_mapper.field_defs_id_by_name[field_name]
         self._field_handler_map[field_id] = handler
 
+    @property
+    def registered_field_ids(self) -> List[int]:
+        return list(self._field_handler_map.keys())
+
     def dispatch_field(self, field_id: int, field_value: str, person_id: int):
         if (
             field_name := self._field_definition_mapper.field_defs_name_by_id.get(
@@ -141,12 +145,32 @@ class FieldDataProcessor:
         self.__cgm = cgm
 
     def process_field_data(self, field_dispatcher):
-        params = {"per_page": 100}
-        for datum in self.__pco.iterate("/people/v2/field_data", **params):
-            field_id = datum["data"]["relationships"]["field_definition"]["data"]["id"]
-            person_id = datum["data"]["relationships"]["customizable"]["data"]["id"]
-            field_value = datum["data"]["attributes"]["value"]
-            field_dispatcher.dispatch_field(int(field_id), field_value, int(person_id))
+        field_ids = field_dispatcher.registered_field_ids
+        logger.info(
+            "Fetching field data for %d field definitions (filtered)", len(field_ids)
+        )
+        total_records = 0
+        for field_id in field_ids:
+            field_name = field_dispatcher._field_definition_mapper.field_defs_name_by_id.get(
+                field_id, str(field_id)
+            )
+            count = 0
+            for datum in self.__pco.iterate(
+                "/people/v2/field_data",
+                per_page=100,
+                **{"where[field_definition_id]": field_id},
+            ):
+                person_id = datum["data"]["relationships"]["customizable"]["data"]["id"]
+                field_value = datum["data"]["attributes"]["value"]
+                field_dispatcher.dispatch_field(field_id, field_value, int(person_id))
+                count += 1
+            logger.info("  %s (%s): %d records", field_name, field_id, count)
+            total_records += count
+        logger.info(
+            "Finished fetching field data: %d records across %d fields",
+            total_records,
+            len(field_ids),
+        )
 
     def process(self):
         field_definition_mapper = PlanningCentreFieldDefinitionMapper(

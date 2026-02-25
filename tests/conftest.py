@@ -20,7 +20,12 @@ def field_data_with_cell_group() -> List[Any]:
 
 @pytest.fixture
 def pco_field_data_with_cell_group(field_data_with_cell_group):
-    return stub(iterate=lambda *args, **kwargs: field_data_with_cell_group)
+    def filtered_iterate(*args, **kwargs):
+        if kwargs.get("where[field_definition_id]") == 401410:
+            return field_data_with_cell_group
+        return []
+
+    return stub(iterate=filtered_iterate)
 
 
 @pytest.fixture
@@ -30,7 +35,12 @@ def field_data_with_personal_attribute() -> List[Any]:
 
 @pytest.fixture
 def pco_field_data_with_personal_attribute(field_data_with_personal_attribute):
-    return stub(iterate=lambda *args, **kwargs: field_data_with_personal_attribute)
+    def filtered_iterate(*args, **kwargs):
+        if kwargs.get("where[field_definition_id]") == 87410:
+            return field_data_with_personal_attribute
+        return []
+
+    return stub(iterate=filtered_iterate)
 
 
 @pytest.fixture
