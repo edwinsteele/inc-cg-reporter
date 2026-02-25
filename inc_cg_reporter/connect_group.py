@@ -100,15 +100,59 @@ class ConnectGroupMembershipManager:
         return f"Name Missing (id: {person_id})"
 
     def populate_names_for_people(self, pco: pypco.PCO):
-        for connect_group in self.connect_groups.values():
-            for person in connect_group.members:
+        unique_person_ids = list({
+            person.id
+            for cg in self.connect_groups.values()
+            for person in cg.members
+        })
+        logger.info(
+            "Fetching names for %d unique people across %d connect groups",
+            len(unique_person_ids),
+            len(self.connect_groups),
+        )
+
+        batch_size = 100
+        num_batches = -(-len(unique_person_ids) // batch_size)
+        total_fetched = 0
+
+        for batch_num, i in enumerate(
+            range(0, len(unique_person_ids), batch_size), start=1
+        ):
+            batch = unique_person_ids[i : i + batch_size]
+            response = pco.get(
+                "/people/v2/people",
+                per_page=batch_size,
+                **{"where[id]": ",".join(str(pid) for pid in batch)},
+            )
+            returned_ids = set()
+            for person_data in response["data"]:
+                person_id = int(person_data["id"])
                 self._person_manager.add_attribute(
                     PERSONAL_ATTRIBUTE_NAME,
-                    ConnectGroupMembershipManager.get_person_name_from_id(
-                        pco, person.id
-                    ),
-                    person.id,
+                    str(person_data["attributes"]["name"]),
+                    person_id,
                 )
+                returned_ids.add(person_id)
+
+            for pid in batch:
+                if pid not in returned_ids:
+                    logger.warning("Name not found in PCO for person id %s", pid)
+                    self._person_manager.add_attribute(
+                        PERSONAL_ATTRIBUTE_NAME, f"Name Missing (id: {pid})", pid
+                    )
+
+            total_fetched += len(returned_ids)
+            logger.info(
+                "  Batch %d/%d: %d names fetched", batch_num, num_batches, len(returned_ids)
+            )
+
+        logger.info(
+            "Finished fetching names: %d total in %d batched requests"
+            " (previously %d sequential requests)",
+            total_fetched,
+            num_batches,
+            len(unique_person_ids),
+        )
 
     @property
     def connect_groups_count(self):
