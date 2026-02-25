@@ -1,0 +1,30 @@
+name: Scheduled run
+on:
+  schedule:
+    - cron: "0 12 1 * *"  # 1st of each month at 12:00 UTC
+  workflow_dispatch:       # allow manual trigger from Actions UI
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install Poetry
+      run: pip install poetry
+
+    - name: Install dependencies
+      run: poetry install --without dev
+
+    - name: Run reporter (no email)
+      env:
+        PC_APPLICATION_ID: ${{ secrets.PC_APPLICATION_ID }}
+        PC_SECRET: ${{ secrets.PC_SECRET }}
+        SEND_EMAIL: "false"
+      run: poetry run python -m inc_cg_reporter.app

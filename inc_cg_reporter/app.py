@@ -112,7 +112,10 @@ def run() -> None:
     saved_file = cg_workbook_manager.save()
     logger.info("Saved file stored as %s", saved_file.resolve())
     logger.info("Stat info: %s", os.stat(saved_file))
-    send_summary_email(saved_file)
+    if os.environ.get("SEND_EMAIL", "true").lower() == "true":
+        send_summary_email(saved_file)
+    else:
+        logger.info("SEND_EMAIL is not true; skipping email")
 
 
 if __name__ == "__main__":
