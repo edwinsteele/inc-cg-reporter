@@ -47,13 +47,41 @@ class PlanningCentreFieldDefinitionMapper:
     def get_field_definition_ids(self) -> Dict[str, int]:
         matching = set(self._field_names)
         field_defs: Dict[str, int] = {}
+        processed = 0
+
+        total_count = self.__pco.get(
+            "/people/v2/field_definitions", per_page=1
+        )["meta"]["total_count"]
+        logger.info(
+            "Fetching field definitions: %d target fields, %d total definitions in PCO",
+            len(self._field_names),
+            total_count,
+        )
 
         params = {"per_page": 100}
         for datum in self.__pco.iterate("/people/v2/field_definitions", **params):
             # Often leading or trailing spaces are accidentally entered. Let's ignore them.
-            if (field_name := datum["data"]["attributes"]["name"].strip()) in matching:
+            field_name = datum["data"]["attributes"]["name"].strip()
+            processed += 1
+            if field_name in matching:
                 field_defs[field_name] = int(datum["data"]["id"])
                 matching.remove(field_name)
+
+            if not matching:
+                logger.info(
+                    "Early exit: found all %d target field definitions after "
+                    "processing %d of %d (skipped %d)",
+                    len(self._field_names),
+                    processed,
+                    total_count,
+                    total_count - processed,
+                )
+                break
+        else:
+            logger.info(
+                "Processed all %d field definitions; no early exit",
+                total_count,
+            )
 
         if matching:
             logger.critical("No match found for fields %s", matching)
