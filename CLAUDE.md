@@ -17,14 +17,6 @@ Previously deployed as an AWS Lambda function via the Serverless Framework (`sls
 
 ## Future work
 
-### Remove remaining AWS dependency
-- Switch SMTP provider away from AWS SES — any provider (Fastmail, Gmail, Postmark, etc.) works; only `.env` needs changing, no code changes required
-- Rotate the SES SMTP credentials in `.env` once a new provider is in place (they date from April 2021)
-
-### GitHub Actions — scheduling
-- Add a scheduled workflow (cron: `0 12 1 * *`) that runs `poetry run python -m inc_cg_reporter.app`
-- Secrets (`PC_APPLICATION_ID`, `PC_SECRET`, `SMTP_*`, `EMAIL_*`) will need to be added as GitHub Actions secrets
-
 ### GitHub Actions — CI (tests & lint)
 - Add a workflow that runs on push/PR: `poetry run pytest` and `poetry run mypy`
 - Consider adding `poetry run black --check` and `poetry run pylint`

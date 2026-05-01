@@ -22,9 +22,14 @@ jobs:
     - name: Install dependencies
       run: poetry install --without dev
 
-    - name: Run reporter (no email)
+    - name: Run reporter
       env:
         PC_APPLICATION_ID: ${{ secrets.PC_APPLICATION_ID }}
         PC_SECRET: ${{ secrets.PC_SECRET }}
-        SEND_EMAIL: "false"
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_USERNAME: ${{ secrets.SMTP_USERNAME }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        EMAIL_FROM: ${{ vars.EMAIL_FROM }}
+        EMAIL_TO: ${{ vars.EMAIL_TO }}
       run: poetry run python -m inc_cg_reporter.app

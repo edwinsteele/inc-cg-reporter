@@ -15,7 +15,7 @@ Copy `.env` (already exists, not committed to git) and ensure it contains:
 ```
 PC_APPLICATION_ID=...
 PC_SECRET=...
-SMTP_HOST=email-smtp.us-east-1.amazonaws.com
+SMTP_HOST=...
 SMTP_PORT=587
 SMTP_USERNAME=...
 SMTP_PASSWORD=...
@@ -23,7 +23,7 @@ EMAIL_FROM=edwin@wordspeak.org
 EMAIL_TO=edwin@wordspeak.org
 ```
 
-The SMTP credentials are for AWS SES (SMTP interface). The PCO credentials are the Planning Center Online app ID and secret.
+The PCO credentials are the Planning Center Online app ID and secret. Any SMTP provider works.
 
 ## Running
 
