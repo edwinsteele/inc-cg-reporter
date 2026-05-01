@@ -25,6 +25,7 @@ __pycache__
 .idea/
 *.swp
 .tox/
+.claude/
 
 # Output files from local invocation
 *.xlsx
