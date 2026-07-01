@@ -114,6 +114,7 @@ class ConnectGroupMembershipManager:
         batch_size = 100
         num_batches = -(-len(unique_person_ids) // batch_size)
         total_fetched = 0
+        missing_ids: set[int] = set()
 
         for batch_num, i in enumerate(
             range(0, len(unique_person_ids), batch_size), start=1
@@ -136,15 +137,24 @@ class ConnectGroupMembershipManager:
 
             for pid in batch:
                 if pid not in returned_ids:
-                    logger.warning("Name not found in PCO for person id %s", pid)
-                    self._person_manager.add_attribute(
-                        PERSONAL_ATTRIBUTE_NAME, f"Name Missing (id: {pid})", pid
+                    # PCO returns no record for this id (the person has been
+                    #  deleted), yet a stale "Connect Group" field datum still
+                    #  lists them as a member. Drop them rather than emitting a
+                    #  "Name Missing" row in the report.
+                    logger.warning(
+                        "No PCO record for person id %s (deleted person with "
+                        "orphaned field data); removing from connect groups",
+                        pid,
                     )
+                    missing_ids.add(pid)
 
             total_fetched += len(returned_ids)
             logger.info(
                 "  Batch %d/%d: %d names fetched", batch_num, num_batches, len(returned_ids)
             )
+
+        if missing_ids:
+            self._remove_people_from_connect_groups(missing_ids)
 
         logger.info(
             "Finished fetching names: %d total in %d batched requests"
@@ -152,6 +162,20 @@ class ConnectGroupMembershipManager:
             total_fetched,
             num_batches,
             len(unique_person_ids),
+        )
+
+    def _remove_people_from_connect_groups(self, person_ids: set[int]) -> None:
+        """Drop members whose ids PCO could not resolve from every connect group."""
+        removed = 0
+        for cg in self.connect_groups.values():
+            before = len(cg.members)
+            cg.members = [m for m in cg.members if m.id not in person_ids]
+            removed += before - len(cg.members)
+        logger.warning(
+            "Removed %d unresolved member(s) across %d id(s): %s",
+            removed,
+            len(person_ids),
+            sorted(person_ids),
         )
 
     @property

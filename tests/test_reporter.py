@@ -72,16 +72,26 @@ def test_populate_names_happy_path(person_manager, connect_group_person_manager)
     assert person_manager._people[222].personal_attributes[PERSONAL_ATTRIBUTE_NAME] == "Bob"
 
 
-def test_populate_names_missing_person(person_manager, connect_group_person_manager):
+def test_populate_names_missing_person_is_dropped(
+    person_manager, connect_group_person_manager
+):
     connect_group_person_manager.add("", "Alpha CG", 111)
     connect_group_person_manager.add("", "Alpha CG", 222)
 
-    # PCO returns only person 111; person 222 is missing from the response
+    # PCO returns only person 111; person 222 has no PCO record (a deleted
+    #  person with orphaned "Connect Group" field data) and must be dropped
+    #  rather than appearing as a "Name Missing" row.
     pco = stub(get=lambda *args, **kwargs: make_people_response((111, "Alice")))
     connect_group_person_manager.populate_names_for_people(pco)
 
-    assert person_manager._people[111].personal_attributes[PERSONAL_ATTRIBUTE_NAME] == "Alice"
-    assert person_manager._people[222].personal_attributes[PERSONAL_ATTRIBUTE_NAME] == "Name Missing (id: 222)"
+    members = connect_group_person_manager.connect_groups["Alpha CG"].members
+    assert [m.id for m in members] == [111]
+    assert members[0].personal_attributes[PERSONAL_ATTRIBUTE_NAME] == "Alice"
+    # The unresolved person carries no injected placeholder name.
+    assert (
+        PERSONAL_ATTRIBUTE_NAME
+        not in person_manager._people[222].personal_attributes
+    )
 
 
 def test_populate_names_deduplicates_across_connect_groups(
