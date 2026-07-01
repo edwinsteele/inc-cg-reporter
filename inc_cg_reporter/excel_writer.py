@@ -175,7 +175,7 @@ class ConnectGroupWorkbookManager:
 
     def create(self) -> None:
         for connect_group in sorted(
-            self._membership_manager.connect_groups.values(), key=lambda x: x.name
+            self._membership_manager.populated_connect_groups, key=lambda x: x.name
         ):
             ws = self._workbook.create_sheet()
             self._worksheet_generator.populate(ws, connect_group)

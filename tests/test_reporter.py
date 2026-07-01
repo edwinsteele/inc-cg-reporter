@@ -94,6 +94,22 @@ def test_populate_names_missing_person_is_dropped(
     )
 
 
+def test_group_emptied_by_dropping_deleted_person_is_excluded(
+    connect_group_person_manager,
+):
+    # "Ghost CG" has a single member whom PCO cannot resolve, so it ends up
+    #  empty and must not be reported. "Alpha CG" keeps a real member.
+    connect_group_person_manager.add("", "Alpha CG", 111)
+    connect_group_person_manager.add("", "Ghost CG", 999)
+
+    pco = stub(get=lambda *args, **kwargs: make_people_response((111, "Alice")))
+    connect_group_person_manager.populate_names_for_people(pco)
+
+    populated = {cg.name for cg in connect_group_person_manager.populated_connect_groups}
+    assert populated == {"Alpha CG"}
+    assert connect_group_person_manager.connect_groups_count == 1
+
+
 def test_populate_names_deduplicates_across_connect_groups(
     person_manager, connect_group_person_manager
 ):

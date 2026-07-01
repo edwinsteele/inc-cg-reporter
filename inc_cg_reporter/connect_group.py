@@ -179,8 +179,18 @@ class ConnectGroupMembershipManager:
         )
 
     @property
+    def populated_connect_groups(self) -> List[ConnectGroup]:
+        """Connect groups that still have at least one member.
+
+        A group can be left empty once deleted people are dropped (see
+        _remove_people_from_connect_groups); such groups exist only because of
+        orphaned field data and are excluded from the report.
+        """
+        return [cg for cg in self.connect_groups.values() if cg.members]
+
+    @property
     def connect_groups_count(self):
-        return len(self.connect_groups)
+        return len(self.populated_connect_groups)
 
     @property
     def connect_groups_member_count(self):
